@@ -564,7 +564,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const key = getKakaoKey();
 
         if (!window.Kakao) {
-            showToast("카카오 SDK 모듈을 불러오는 중입니다. 인터넷 연결을 확인해주세요.");
+            showToast("카카오 SDK 로딩 실패. 페이지를 새로고침(F5) 해주세요.");
             return;
         }
 
@@ -578,41 +578,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (window.Kakao.isInitialized()) {
             const res = currentResultData || ARCHETYPES.idea;
-            try {
-                window.Kakao.Share.sendDefault({
-                    objectType: 'feed',
-                    content: {
-                        title: `[대학생 창업 성향 테스트] ${res.title}`,
-                        description: `나의 캠프 추천 역할: ${res.role}\n${res.description.substring(0, 75)}...`,
-                        imageUrl: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800',
+            const shareConfig = {
+                objectType: 'feed',
+                content: {
+                    title: `[대학생 창업 성향 테스트] ${res.title}`,
+                    description: `나의 캠프 추천 역할: ${res.role}\n${res.description.substring(0, 75)}...`,
+                    imageUrl: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800',
+                    link: {
+                        mobileWebUrl: window.location.href,
+                        webUrl: window.location.href,
+                    },
+                },
+                buttons: [
+                    {
+                        title: '내 성향 결과 확인하기',
                         link: {
                             mobileWebUrl: window.location.href,
                             webUrl: window.location.href,
                         },
                     },
-                    buttons: [
-                        {
-                            title: '내 성향 결과 확인하기',
-                            link: {
-                                mobileWebUrl: window.location.href,
-                                webUrl: window.location.href,
-                            },
+                    {
+                        title: '나도 테스트해보기',
+                        link: {
+                            mobileWebUrl: window.location.origin,
+                            webUrl: window.location.origin,
                         },
-                        {
-                            title: '나도 테스트해보기',
-                            link: {
-                                mobileWebUrl: window.location.origin,
-                                webUrl: window.location.origin,
-                            },
-                        },
-                    ],
-                });
+                    },
+                ],
+            };
+
+            try {
+                if (window.Kakao.Share && window.Kakao.Share.sendDefault) {
+                    window.Kakao.Share.sendDefault(shareConfig);
+                } else if (window.Kakao.Link && window.Kakao.Link.sendDefault) {
+                    window.Kakao.Link.sendDefault(shareConfig);
+                } else {
+                    showToast("카카오톡 공유 기능을 지원하지 않는 환경입니다.");
+                }
             } catch (err) {
                 console.error('[Kakao Share Error]', err);
-                showToast("카카오 공유 도중 오류가 발생했습니다: " + (err.message || err));
+                showToast("카카오 개발자 콘솔 플랫폼 설정의 사이트 도메인을 확인해주세요.");
             }
         } else {
-            showToast("카카오 SDK 초기화에 실패했습니다. (키: " + key + ")");
+            showToast("카카오 SDK 초기화 실패. 브라우저 새로고침(F5)을 해주세요.");
         }
     }
 });
