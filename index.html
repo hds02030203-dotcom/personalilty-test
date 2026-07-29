@@ -19,7 +19,8 @@
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Modular CSS System (from design.md) -->
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="styles/variables.css">
     <link rel="stylesheet" href="styles/base.css">
     <link rel="stylesheet" href="styles/components.css">
@@ -32,9 +33,18 @@
     <div class="bg-glow bg-glow-3"></div>
 
     <div class="app-container">
-        <!-- Header is mounted dynamically by components/Header.js -->
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo">
+                <i class="fa-solid fa-rocket logo-icon"></i>
+                <span class="logo-text">STARTUP<span class="highlight">TYPE</span></span>
+            </div>
+            <div class="tag-badge">
+                <i class="fa-solid fa-graduation-cap"></i> 대학생 창업 캠프 공식 진단
+            </div>
+        </header>
 
-        <!-- 1. Landing Screen -->
+        <!-- 1. Landing Screen (1. 시작화면) -->
         <section id="landing-screen" class="screen active">
             <div class="hero-content">
                 <div class="badge-pill">
@@ -80,55 +90,19 @@
             </div>
         </section>
 
-        <!-- 2. Quiz Screen -->
+        <!-- 2. Quiz Screen (2. 테스트 진행 화면) -->
         <section id="quiz-screen" class="screen">
-            <div class="quiz-container">
-                <!-- Mounted ProgressBar Component Slot -->
-                <div id="progress-slot"></div>
-
-                <!-- Mounted QuestionCard Component Slot -->
-                <div id="question-slot"></div>
-
-                <!-- Navigation Buttons -->
-                <div class="quiz-nav">
-                    <button id="prev-btn" class="btn btn-secondary" disabled>
-                        <i class="fa-solid fa-chevron-left"></i> 이전 질문
-                    </button>
-                </div>
-            </div>
+            <!-- Dynamic Content Rendered by script.js -->
         </section>
 
-        <!-- 3. Loading Screen -->
+        <!-- 3. Loading Screen (3. 분석 로딩 화면) -->
         <section id="loading-screen" class="screen">
-            <!-- Mounted LoadingSpinner Component Slot -->
-            <div id="loading-slot"></div>
+            <!-- Dynamic Content Rendered by script.js -->
         </section>
 
-        <!-- 4. Result Screen -->
+        <!-- 4. Result Screen (4. 최종 결과 화면) -->
         <section id="result-screen" class="screen">
-            <div class="result-container">
-                <div class="result-header">
-                    <div class="result-tag">MY STARTUP TYPE</div>
-                    <h1 id="result-main-title" class="result-main-title">유형 제목</h1>
-                    <p id="result-sub-title" class="result-sub-title">유형 수식어 및 한 줄 정의</p>
-                </div>
-
-                <!-- Mounted ResultCard Component Slot -->
-                <div id="result-slot"></div>
-
-                <!-- Mounted SynergyCard Component Slot -->
-                <div id="synergy-slot"></div>
-
-                <!-- Action Buttons -->
-                <div class="result-actions">
-                    <button id="share-btn" class="btn btn-primary btn-large">
-                        <i class="fa-solid fa-share-nodes"></i> 내 결과 공유하기
-                    </button>
-                    <button id="restart-btn" class="btn btn-secondary btn-large">
-                        <i class="fa-solid fa-rotate-right"></i> 다시 테스트하기
-                    </button>
-                </div>
-            </div>
+            <!-- Dynamic Content Rendered by script.js -->
         </section>
 
         <!-- Footer -->
@@ -137,7 +111,7 @@
         </footer>
     </div>
 
-    <!-- Main JavaScript Entry Module -->
-    <script type="module" src="app.js"></script>
+    <!-- Universal JavaScript Engine (Works on both file:// and http://) -->
+    <script src="script.js"></script>
 </body>
 </html>

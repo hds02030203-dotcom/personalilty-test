@@ -1,18 +1,18 @@
 /**
  * Startup Personality Test (대학생 창업 성향 테스트)
- * JavaScript Engine
+ * Unified Production Engine (Zero CORS Issues - Works on file:// and http://)
  */
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- Data Definitions ---
 
-    // 1. Types (6가지 창업 성향 유형)
-    const TYPES = {
+    // 1. Archetypes Data
+    const ARCHETYPES = {
         idea: {
             id: "idea",
             title: "새로운 기회의 창조자, 아이디어형",
             subtitle: "The Spark Innovator (CPO)",
-            role: "Product Lead / CPO / 기획 리더",
+            role: "Product Lead / CPO / 아이디어 기획자",
             icon: "fa-lightbulb",
             avatarBg: "linear-gradient(135deg, #a855f7 0%, #ec4899 100%)",
             description: "세상을 바꿀 기발하고 혁신적인 아이디어가 끊임없이 샘솟는 퍼스트 무버(First Mover)입니다. 남들이 보지 못하는 문제의 본질을 파악하고 차별화된 아이템을 제시하는 능력이 탁월합니다.",
@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         strategist: {
             id: "strategist",
-            title: "비전과 승리를 설계를 하는, 전략형",
+            title: "비전과 승리를 설계하는, 전략형",
             subtitle: "The Business Strategist (CEO)",
             role: "CEO / Founder / 사업개발(BD)",
             icon: "fa-chess",
@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // 2. Questions Data (8가지 상황 질문)
+    // 2. Questions Data
     const QUESTIONS = [
         {
             category: "캠프 상황 #1 · 아이디어 발상",
@@ -259,7 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- State Variables ---
     let currentQuestionIndex = 0;
     let scores = { idea: 0, builder: 0, strategist: 0, collaborator: 0, analyst: 0, execution: 0 };
-    let userAnswers = []; // History for Back Button
+    let userAnswers = [];
 
     // --- DOM Elements ---
     const landingScreen = document.getElementById('landing-screen');
@@ -268,42 +268,36 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultScreen = document.getElementById('result-screen');
 
     const startBtn = document.getElementById('start-btn');
-    const prevBtn = document.getElementById('prev-btn');
-    const shareBtn = document.getElementById('share-btn');
-    const restartBtn = document.getElementById('restart-btn');
 
-    const questionCounter = document.getElementById('question-counter');
-    const progressPercent = document.getElementById('progress-percent');
-    const progressBarFill = document.getElementById('progress-bar-fill');
-    const qCategory = document.getElementById('q-category');
-    const questionText = document.getElementById('question-text');
-    const optionsContainer = document.getElementById('options-container');
+    // --- Toast Component ---
+    function showToast(msg) {
+        let toast = document.getElementById('toast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'toast';
+            toast.className = 'toast';
+            toast.innerHTML = `<i class="fa-solid fa-check-circle"></i> <span id="toast-msg"></span>`;
+            document.body.appendChild(toast);
+        }
+        document.getElementById('toast-msg').textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2500);
+    }
 
-    const loadingText = document.getElementById('loading-text');
-    const loadingBarFill = document.getElementById('loading-bar-fill');
-
-    const toast = document.getElementById('toast');
-    const toastMsg = document.getElementById('toast-msg');
-
-    // --- Event Listeners ---
-
-    startBtn.addEventListener('click', startQuiz);
-    prevBtn.addEventListener('click', goToPreviousQuestion);
-    restartBtn.addEventListener('click', resetQuiz);
-    shareBtn.addEventListener('click', shareResult);
-
-    // --- Functions ---
-
-    function switchScreen(screenToShow) {
-        const screens = [landingScreen, quizScreen, loadingScreen, resultScreen];
-        screens.forEach(screen => {
-            if (screen === screenToShow) {
-                screen.classList.add('active');
-            } else {
-                screen.classList.remove('active');
+    // --- Navigation Logic ---
+    function switchScreen(targetScreen) {
+        [landingScreen, quizScreen, loadingScreen, resultScreen].forEach(s => {
+            if (s) {
+                if (s === targetScreen) s.classList.add('active');
+                else s.classList.remove('active');
             }
         });
         window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // 1. Landing Screen Event
+    if (startBtn) {
+        startBtn.addEventListener('click', startQuiz);
     }
 
     function startQuiz() {
@@ -311,98 +305,127 @@ document.addEventListener('DOMContentLoaded', () => {
         userAnswers = [];
         scores = { idea: 0, builder: 0, strategist: 0, collaborator: 0, analyst: 0, execution: 0 };
         switchScreen(quizScreen);
-        renderQuestion();
+        renderQuizView();
     }
 
-    function renderQuestion() {
+    // 2. Render QuizView Component
+    function renderQuizView() {
         const currentQ = QUESTIONS[currentQuestionIndex];
         const totalQ = QUESTIONS.length;
-
-        // Progress UI
         const progressVal = Math.round(((currentQuestionIndex + 1) / totalQ) * 100);
-        questionCounter.textContent = `Question ${currentQuestionIndex + 1} / ${totalQ}`;
-        progressPercent.textContent = `${progressVal}%`;
-        progressBarFill.style.width = `${progressVal}%`;
 
-        // Question Content
-        qCategory.textContent = currentQ.category;
-        questionText.textContent = currentQ.question;
+        quizScreen.innerHTML = `
+            <div class="quiz-container">
+                <div class="progress-section">
+                    <div class="progress-header">
+                        <span class="step-indicator">Question ${currentQuestionIndex + 1} / ${totalQ}</span>
+                        <span class="percent-indicator">${progressVal}%</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" style="width: ${progressVal}%;"></div>
+                    </div>
+                </div>
 
-        // Options List
-        optionsContainer.innerHTML = '';
-        currentQ.options.forEach((opt, idx) => {
-            const btn = document.createElement('button');
-            btn.className = 'option-btn';
-            btn.innerHTML = `
-                <span class="option-num">${String.fromCharCode(65 + idx)}</span>
-                <span>${opt.text}</span>
-            `;
-            btn.addEventListener('click', () => selectOption(opt.scores));
-            optionsContainer.appendChild(btn);
+                <div class="question-card glass-panel">
+                    <div class="question-badge">
+                        <i class="fa-solid fa-lightbulb"></i> <span>${currentQ.category}</span>
+                    </div>
+                    <h2 class="question-text">${currentQ.question}</h2>
+                    <div class="options-container">
+                        ${currentQ.options.map((opt, idx) => `
+                            <button class="option-btn" data-opt-index="${idx}">
+                                <span class="option-num">${String.fromCharCode(65 + idx)}</span>
+                                <span>${opt.text}</span>
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <div class="quiz-nav">
+                    <button id="quiz-prev-btn" class="btn btn-secondary" ${currentQuestionIndex === 0 ? 'disabled' : ''}>
+                        <i class="fa-solid fa-chevron-left"></i> 이전 질문
+                    </button>
+                </div>
+            </div>
+        `;
+
+        // Option Click Handlers
+        quizScreen.querySelectorAll('.option-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const optIdx = parseInt(btn.dataset.optIndex, 10);
+                const selectedOpt = currentQ.options[optIdx];
+                handleSelectOption(selectedOpt.scores);
+            });
         });
 
-        // Prev Button State
-        prevBtn.disabled = currentQuestionIndex === 0;
+        // Prev Button Handler
+        const prevBtn = quizScreen.querySelector('#quiz-prev-btn');
+        if (prevBtn) {
+            prevBtn.addEventListener('click', goToPreviousQuestion);
+        }
     }
 
-    function selectOption(optionScores) {
-        // Save history
+    function handleSelectOption(optionScores) {
         userAnswers.push(optionScores);
-
-        // Add scores
         for (const [type, pt] of Object.entries(optionScores)) {
             scores[type] = (scores[type] || 0) + pt;
         }
 
-        // Next Question or Finish
         currentQuestionIndex++;
         if (currentQuestionIndex < QUESTIONS.length) {
-            renderQuestion();
+            renderQuizView();
         } else {
-            showLoadingAndCalculate();
+            renderLoadingView();
         }
     }
 
     function goToPreviousQuestion() {
         if (currentQuestionIndex > 0 && userAnswers.length > 0) {
-            // Revert last answer scores
             const lastScores = userAnswers.pop();
             for (const [type, pt] of Object.entries(lastScores)) {
                 scores[type] -= pt;
             }
             currentQuestionIndex--;
-            renderQuestion();
+            renderQuizView();
         }
     }
 
-    function showLoadingAndCalculate() {
+    // 3. Render LoadingView Component
+    function renderLoadingView() {
         switchScreen(loadingScreen);
+        loadingScreen.innerHTML = `
+            <div class="loading-content">
+                <div class="spinner-box">
+                    <div class="circle-outer"></div>
+                    <div class="circle-inner"></div>
+                    <i class="fa-solid fa-atom loading-icon"></i>
+                </div>
+                <h2 id="loading-title" class="loading-title">당신의 창업 성향 분석 중...</h2>
+                <p class="loading-subtext">창업 캠프에서의 행동 패턴과 선택한 답변을 종합 계산하고 있습니다.</p>
+                <div class="loading-progress">
+                    <div id="loading-bar-fill" class="loading-bar-fill" style="width: 0%;"></div>
+                </div>
+            </div>
+        `;
 
-        const loadingPhrases = [
-            "창업 캠프에서의 당신의 행동 패턴을 분석하는 중...",
-            "팀원과의 시너지 및 찰떡 궁합을 계산하는 중...",
-            "당신의 대표 스타트업 롤(Role) 진단 완료!"
-        ];
+        const fillBar = loadingScreen.querySelector('#loading-bar-fill');
+        const titleText = loadingScreen.querySelector('#loading-title');
 
-        let step = 0;
-        loadingBarFill.style.width = "0%";
+        setTimeout(() => { if (fillBar) fillBar.style.width = "45%"; }, 150);
 
-        setTimeout(() => { loadingBarFill.style.width = "40%"; }, 200);
+        setTimeout(() => {
+            if (titleText) titleText.textContent = "팀원과의 시너지 및 찰떡 궁합을 계산하는 중...";
+            if (fillBar) fillBar.style.width = "85%";
+        }, 1000);
 
-        const phraseInterval = setInterval(() => {
-            step++;
-            if (step < loadingPhrases.length) {
-                loadingText.textContent = loadingPhrases[step];
-                loadingBarFill.style.width = `${(step + 1) * 35}%`;
-            } else {
-                clearInterval(phraseInterval);
-                calculateAndShowResult();
-            }
-        }, 800);
+        setTimeout(() => {
+            if (fillBar) fillBar.style.width = "100%";
+            renderResultView();
+        }, 2200);
     }
 
-    function calculateAndShowResult() {
-        // Find highest scoring type
+    // 4. Render ResultView Component
+    function renderResultView() {
         let highestType = "idea";
         let maxScore = -1;
 
@@ -413,73 +436,100 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        const resultData = TYPES[highestType];
+        const res = ARCHETYPES[highestType];
 
-        // Populate Result DOM
-        document.getElementById('result-title').textContent = resultData.title;
-        document.getElementById('result-subtitle').textContent = resultData.subtitle;
-        document.getElementById('result-role').textContent = resultData.role;
+        resultScreen.innerHTML = `
+            <div class="result-container">
+                <div class="result-header">
+                    <div class="result-tag">MY STARTUP TYPE</div>
+                    <h1 class="result-main-title">${res.title}</h1>
+                    <p class="result-sub-title">${res.subtitle}</p>
+                </div>
 
-        const avatarBox = document.getElementById('result-avatar');
-        avatarBox.style.background = resultData.avatarBg;
-        avatarBox.innerHTML = `<i class="fa-solid ${resultData.icon}"></i>`;
+                <div class="result-card glass-panel">
+                    <div class="card-hero">
+                        <div class="avatar-box" style="background: ${res.avatarBg};">
+                            <i class="fa-solid ${res.icon}"></i>
+                        </div>
+                        <div class="role-badge">
+                            <i class="fa-solid fa-briefcase"></i> 추천 캠프 역할: <span>${res.role}</span>
+                        </div>
+                    </div>
 
-        document.getElementById('result-description').textContent = resultData.description;
+                    <div class="card-section">
+                        <h3><i class="fa-solid fa-address-card"></i> 성향 종합 분석</h3>
+                        <p class="desc-text">${res.description}</p>
+                    </div>
 
-        // Strengths
-        const strengthsList = document.getElementById('result-strengths');
-        strengthsList.innerHTML = resultData.strengths.map(s => `<li>${s}</li>`).join('');
+                    <div class="card-grid">
+                        <div class="sub-card strengths-card">
+                            <h4><i class="fa-solid fa-thumbs-up"></i> 대표 강점 (Strengths)</h4>
+                            <ul class="badge-list">
+                                ${res.strengths.map(s => `<li>${s}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div class="sub-card growths-card">
+                            <h4><i class="fa-solid fa-seedling"></i> 보완하면 더 좋은 점</h4>
+                            <ul class="badge-list">
+                                ${res.growths.map(g => `<li>${g}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
 
-        // Growths
-        const growthsList = document.getElementById('result-growths');
-        growthsList.innerHTML = resultData.growths.map(g => `<li>${g}</li>`).join('');
+                    <div class="card-section tips-section">
+                        <h3><i class="fa-solid fa-compass"></i> 창업 캠프 200% 활용 팁</h3>
+                        <p class="tip-text">${res.tip}</p>
+                    </div>
+                </div>
 
-        // Tip
-        document.getElementById('result-tip').textContent = resultData.tip;
+                <div class="synergy-section">
+                    <h2 class="section-title"><i class="fa-solid fa-handshake"></i> 팀원 궁합 및 시너지 카드</h2>
+                    <div class="synergy-grid">
+                        <div class="synergy-card best-partner glass-panel">
+                            <div class="synergy-header">
+                                <span class="synergy-badge best"><i class="fa-solid fa-heart"></i> 환상의 짝꿍</span>
+                                <h3>${res.bestPartner.name}</h3>
+                            </div>
+                            <p class="synergy-desc">${res.bestPartner.desc}</p>
+                        </div>
+                        <div class="synergy-card challenging-partner glass-panel">
+                            <div class="synergy-header">
+                                <span class="synergy-badge challenge"><i class="fa-solid fa-bolt"></i> 주의가 필요한 짝꿍</span>
+                                <h3>${res.challengingPartner.name}</h3>
+                            </div>
+                            <p class="synergy-desc">${res.challengingPartner.desc}</p>
+                        </div>
+                    </div>
+                </div>
 
-        // Synergy
-        document.getElementById('best-partner-name').textContent = resultData.bestPartner.name;
-        document.getElementById('best-partner-desc').textContent = resultData.bestPartner.desc;
-
-        document.getElementById('challenging-partner-name').textContent = resultData.challengingPartner.name;
-        document.getElementById('challenging-partner-desc').textContent = resultData.challengingPartner.desc;
+                <div class="result-actions">
+                    <button id="res-share-btn" class="btn btn-primary btn-large">
+                        <i class="fa-solid fa-share-nodes"></i> 내 결과 공유하기
+                    </button>
+                    <button id="res-restart-btn" class="btn btn-secondary btn-large">
+                        <i class="fa-solid fa-rotate-right"></i> 다시 테스트하기
+                    </button>
+                </div>
+            </div>
+        `;
 
         switchScreen(resultScreen);
-    }
 
-    function resetQuiz() {
-        startQuiz();
-    }
-
-    function shareResult() {
-        const shareData = {
-            title: '대학생 창업 성향 테스트',
-            text: '나의 창업 성향과 캠프 추천 역할을 확인해보세요!',
-            url: window.location.href
-        };
-
-        if (navigator.share) {
-            navigator.share(shareData).catch(() => {
-                copyToClipboard(window.location.href);
-            });
-        } else {
-            copyToClipboard(window.location.href);
-        }
-    }
-
-    function copyToClipboard(text) {
-        navigator.clipboard.writeText(text).then(() => {
-            showToast("결과 페이지 링크가 복사되었습니다!");
-        }).catch(() => {
-            showToast("링크 복사에 실패했습니다.");
+        // Result Event Listeners
+        resultScreen.querySelector('#res-share-btn').addEventListener('click', () => {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    showToast("결과 페이지 링크가 클립보드에 복사되었습니다!");
+                }).catch(() => {
+                    showToast("링크 복사에 실패했습니다.");
+                });
+            } else {
+                showToast("결과 페이지 링크가 복사되었습니다!");
+            }
         });
-    }
 
-    function showToast(msg) {
-        toastMsg.textContent = msg;
-        toast.classList.add('show');
-        setTimeout(() => {
-            toast.classList.remove('show');
-        }, 2500);
+        resultScreen.querySelector('#res-restart-btn').addEventListener('click', () => {
+            startQuiz();
+        });
     }
 });
