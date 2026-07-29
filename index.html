@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>대학생 창업 성향 테스트 | Startup Personality Test</title>
+    <meta name="description" content="나는 창업 팀에서 어떤 역할일까? 대학생 창업 캠프 필수! 3분 만에 알아보는 내 창업 성향 및 환상의 팀원 궁합 진단">
+    
+    <!-- OpenGraph Tags -->
+    <meta property="og:title" content="대학생 창업 성향 테스트 | Startup Personality Test">
+    <meta property="og:description" content="3분 만에 확인하는 내 창업 성향과 캠프 추천 역할, 환상의 팀원 궁합!">
+    <meta property="og:type" content="website">
+
+    <!-- Fonts: Google Fonts Pretendard alternative (Outfit + Noto Sans KR) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Canvas background decoration -->
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+    <div class="bg-glow bg-glow-3"></div>
+
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo">
+                <i class="fa-solid fa-rocket logo-icon"></i>
+                <span class="logo-text">STARTUP<span class="highlight">TYPE</span></span>
+            </div>
+            <div class="tag-badge">
+                <i class="fa-solid fa-graduation-cap"></i> 대학생 창업 캠프 공식 진단
+            </div>
+        </header>
+
+        <!-- 1. Landing Screen -->
+        <section id="landing-screen" class="screen active">
+            <div class="hero-content">
+                <div class="badge-pill">
+                    <i class="fa-solid fa-bolt"></i> 소요시간 단 3분!
+                </div>
+                <h1 class="main-title">
+                    나는 창업 팀에서<br>
+                    <span class="gradient-text">어떤 롤(Role)일까?</span>
+                </h1>
+                <p class="subtitle">
+                    세상을 바꾸는 스타트업! 아이디어부터 비즈니스 전략, 개발까지<br>
+                    내 창업 성향을 확인하고 <strong>최고의 시너지 팀원</strong>을 찾아보세요.
+                </p>
+
+                <!-- Feature Highlights -->
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="icon-wrapper"><i class="fa-solid fa-bullseye"></i></div>
+                        <h3>8개 실전 상황 질문</h3>
+                        <p>해커톤과 창업 캠프에서 겪는 리얼한 상황 진단</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon-wrapper"><i class="fa-solid fa-user-astronaut"></i></div>
+                        <h3>6가지 창업 캐릭터</h3>
+                        <p>아이디어·제작·전략·협업·분석·실행 성향</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon-wrapper"><i class="fa-solid fa-people-group"></i></div>
+                        <h3>팀원 환상의 궁합</h3>
+                        <p>캠프 내 추천 역할 및 상극/찰떡 짝꿍 추천</p>
+                    </div>
+                </div>
+
+                <div class="action-box">
+                    <button id="start-btn" class="btn btn-primary btn-large glow-effect">
+                        <span>내 창업 성향 알아보러 가기</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                    <div class="user-stats">
+                        <i class="fa-solid fa-fire"></i> 현재까지 <strong>1,480명</strong>의 예비 창업가가 진단받았어요!
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Quiz Screen -->
+        <section id="quiz-screen" class="screen">
+            <div class="quiz-container">
+                <!-- Progress bar -->
+                <div class="progress-section">
+                    <div class="progress-header">
+                        <span id="question-counter" class="step-indicator">Question 1 / 8</span>
+                        <span id="progress-percent" class="percent-indicator">12%</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div id="progress-bar-fill" class="progress-bar-fill" style="width: 12.5%;"></div>
+                    </div>
+                </div>
+
+                <!-- Question Card -->
+                <div class="question-card glass-panel">
+                    <div class="question-badge">
+                        <i class="fa-solid fa-lightbulb"></i> <span id="q-category">캠프 상황 #1</span>
+                    </div>
+                    <h2 id="question-text" class="question-text">
+                        질문 텍스트가 들어가는 공간입니다.
+                    </h2>
+                    
+                    <!-- Options List -->
+                    <div id="options-container" class="options-container">
+                        <!-- Rendered by script.js -->
+                    </div>
+                </div>
+
+                <!-- Navigation buttons -->
+                <div class="quiz-nav">
+                    <button id="prev-btn" class="btn btn-secondary" disabled>
+                        <i class="fa-solid fa-chevron-left"></i> 이전 질문
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Loading Screen -->
+        <section id="loading-screen" class="screen">
+            <div class="loading-content">
+                <div class="spinner-box">
+                    <div class="circle-outer"></div>
+                    <div class="circle-inner"></div>
+                    <i class="fa-solid fa-atom loading-icon"></i>
+                </div>
+                <h2 id="loading-text" class="loading-title">당신의 창업 성향 분석 중...</h2>
+                <p class="loading-subtext">창업 캠프에서의 행동 패턴과 선택한 답변을 종합 계산하고 있습니다.</p>
+                <div class="loading-progress">
+                    <div id="loading-bar-fill" class="loading-bar-fill"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Result Screen -->
+        <section id="result-screen" class="screen">
+            <div class="result-container">
+                <div class="result-header">
+                    <div class="result-tag">MY STARTUP TYPE</div>
+                    <h1 id="result-title" class="result-main-title">유형 제목</h1>
+                    <p id="result-subtitle" class="result-sub-title">유형 수식어 및 한 줄 정의</p>
+                </div>
+
+                <!-- Main Result Card -->
+                <div class="result-card glass-panel">
+                    <div class="card-hero">
+                        <div id="result-avatar" class="avatar-box">
+                            <i class="fa-solid fa-rocket"></i>
+                        </div>
+                        <div class="role-badge">
+                            <i class="fa-solid fa-briefcase"></i> 추천 캠프 역할: <span id="result-role">CEO</span>
+                        </div>
+                    </div>
+
+                    <div class="card-section">
+                        <h3><i class="fa-solid fa-address-card"></i> 성향 종합 분석</h3>
+                        <p id="result-description" class="desc-text">
+                            상세 설명 영역
+                        </p>
+                    </div>
+
+                    <div class="card-grid">
+                        <div class="sub-card strengths-card">
+                            <h4><i class="fa-solid fa-thumbs-up"></i> 대표 강점 (Strengths)</h4>
+                            <ul id="result-strengths" class="badge-list">
+                                <!-- Rendered dynamically -->
+                            </ul>
+                        </div>
+                        <div class="sub-card growths-card">
+                            <h4><i class="fa-solid fa-seedling"></i> 보완하면 더 좋은 점</h4>
+                            <ul id="result-growths" class="badge-list">
+                                <!-- Rendered dynamically -->
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card-section tips-section">
+                        <h3><i class="fa-solid fa-compass"></i> 창업 캠프 200% 활용 팁</h3>
+                        <p id="result-tip" class="tip-text"></p>
+                    </div>
+                </div>
+
+                <!-- Team Synergy Section -->
+                <div class="synergy-section">
+                    <h2 class="section-title"><i class="fa-solid fa-handshake"></i> 팀원 궁합 및 시너지 카드</h2>
+                    <div class="synergy-grid">
+                        <div class="synergy-card best-partner glass-panel">
+                            <div class="synergy-header">
+                                <span class="synergy-badge best"><i class="fa-solid fa-heart"></i> 환상의 짝꿍</span>
+                                <h3 id="best-partner-name">유형 이름</h3>
+                            </div>
+                            <p id="best-partner-desc" class="synergy-desc">설명</p>
+                        </div>
+                        <div class="synergy-card challenging-partner glass-panel">
+                            <div class="synergy-header">
+                                <span class="synergy-badge challenge"><i class="fa-solid fa-bolt"></i> 주의가 필요한 짝꿍</span>
+                                <h3 id="challenging-partner-name">유형 이름</h3>
+                            </div>
+                            <p id="challenging-partner-desc" class="synergy-desc">설명</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="result-actions">
+                    <button id="share-btn" class="btn btn-primary btn-large">
+                        <i class="fa-solid fa-share-nodes"></i> 내 결과 공유하기
+                    </button>
+                    <button id="restart-btn" class="btn btn-secondary btn-large">
+                        <i class="fa-solid fa-rotate-right"></i> 다시 테스트하기
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>© 2026 Startup Personality Test | 대학생 창업 교육 전문 기획</p>
+        </footer>
+    </div>
+
+    <!-- Toast Notification for Share -->
+    <div id="toast" class="toast">
+        <i class="fa-solid fa-check-circle"></i> <span id="toast-msg">링크가 클립보드에 복사되었습니다!</span>
+    </div>
+
+    <!-- Script -->
+    <script src="script.js"></script>
+</body>
+</html>
