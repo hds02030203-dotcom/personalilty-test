@@ -7,8 +7,7 @@ import { ARCHETYPES } from './data/archetypes.js';
 import { QUESTIONS } from './data/questions.js';
 import { createHeader } from './components/Header.js';
 import { renderLandingCard } from './components/LandingCard.js';
-import { renderProgressBar } from './components/ProgressBar.js';
-import { renderQuestionCard } from './components/QuestionCard.js';
+import { renderQuizView } from './components/QuizView.js';
 import { renderLoadingSpinner } from './components/LoadingSpinner.js';
 import { renderResultCard } from './components/ResultCard.js';
 import { renderSynergyCard } from './components/SynergyCard.js';
@@ -35,28 +34,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultScreen = document.getElementById('result-screen');
 
     // DOM Slots
-    const progressSlot = document.getElementById('progress-slot');
-    const questionSlot = document.getElementById('question-slot');
     const loadingSlot = document.getElementById('loading-slot');
     const resultSlot = document.getElementById('result-slot');
     const synergySlot = document.getElementById('synergy-slot');
 
-    // Mount LandingCard Component
+    // 1. Mount LandingCard Component (1. 시작화면)
     renderLandingCard(landingScreen, {
         onStartTest: startQuiz,
         userCount: "1,480"
     });
 
-    const prevBtn = document.getElementById('prev-btn');
     const shareBtn = document.getElementById('share-btn');
     const restartBtn = document.getElementById('restart-btn');
 
     // --- Event Listeners ---
-    prevBtn.addEventListener('click', goToPreviousQuestion);
     restartBtn.addEventListener('click', resetQuiz);
     shareBtn.addEventListener('click', shareResult);
 
-    // --- Core Logic ---
+    // --- Core Navigation Logic ---
     function switchScreen(targetScreen) {
         [landingScreen, quizScreen, loadingScreen, resultScreen].forEach(s => {
             if (s === targetScreen) s.classList.add('active');
@@ -65,31 +60,26 @@ document.addEventListener('DOMContentLoaded', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    // 2. Start Test Functionality
     function startQuiz() {
         currentQuestionIndex = 0;
         userAnswers = [];
         scores = { idea: 0, builder: 0, strategist: 0, collaborator: 0, analyst: 0, execution: 0 };
         switchScreen(quizScreen);
-        renderCurrentQuestion();
+        renderCurrentQuestionView();
     }
 
-    function renderCurrentQuestion() {
+    // Render QuizView Component (2. 테스트 진행 화면)
+    function renderCurrentQuestionView() {
         const currentQ = QUESTIONS[currentQuestionIndex];
 
-        // 1. Render Progress Component
-        renderProgressBar(progressSlot, {
-            current: currentQuestionIndex + 1,
-            total: QUESTIONS.length
-        });
-
-        // 2. Render Question Card Component
-        renderQuestionCard(questionSlot, {
+        renderQuizView(quizScreen, {
+            currentQuestionIndex,
+            totalQuestions: QUESTIONS.length,
             questionData: currentQ,
-            onSelectOption: handleSelectOption
+            onSelectOption: handleSelectOption,
+            onPrevQuestion: goToPreviousQuestion
         });
-
-        // 3. Update Prev Button State
-        prevBtn.disabled = currentQuestionIndex === 0;
     }
 
     function handleSelectOption(optionScores) {
@@ -100,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         currentQuestionIndex++;
         if (currentQuestionIndex < QUESTIONS.length) {
-            renderCurrentQuestion();
+            renderCurrentQuestionView();
         } else {
             processResultAndLoading();
         }
@@ -113,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 scores[type] -= pt;
             }
             currentQuestionIndex--;
-            renderCurrentQuestion();
+            renderCurrentQuestionView();
         }
     }
 

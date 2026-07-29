@@ -6,6 +6,7 @@ import { ARCHETYPES } from './data/archetypes.js';
 import { QUESTIONS } from './data/questions.js';
 import { createHeader } from './components/Header.js';
 import { renderLandingCard } from './components/LandingCard.js';
+import { renderQuizView } from './components/QuizView.js';
 import { renderProgressBar } from './components/ProgressBar.js';
 import { renderQuestionCard } from './components/QuestionCard.js';
 import { renderLoadingSpinner } from './components/LoadingSpinner.js';
@@ -25,13 +26,36 @@ document.addEventListener('DOMContentLoaded', () => {
     if (landingContainer) {
         renderLandingCard(landingContainer, {
             onStartTest: () => {
-                toast.show("✨ 랜딩 히어로 컴포넌트의 [시작하기] 버튼이 작동했습니다!");
+                toast.show("✨ 랜딩 히어로 [내 창업 성향 알아보러 가기] 버튼 클릭! (테스트 화면 진입)");
             },
             userCount: "1,480"
         });
     }
 
-    // 3. Render ProgressBar Component Demo
+    // 3. Render QuizView Component Demo (2. 테스트 진행 화면)
+    const quizViewContainer = document.getElementById('preview-quiz-view');
+    if (quizViewContainer) {
+        let demoIndex = 2; // Show Q3
+        function updateQuizViewDemo() {
+            renderQuizView(quizViewContainer, {
+                currentQuestionIndex: demoIndex,
+                totalQuestions: QUESTIONS.length,
+                questionData: QUESTIONS[demoIndex],
+                onSelectOption: (scores) => {
+                    toast.show(`선택 완료! 점수 반영: ${JSON.stringify(scores)}`);
+                    if (demoIndex < QUESTIONS.length - 1) demoIndex++;
+                    updateQuizViewDemo();
+                },
+                onPrevQuestion: () => {
+                    if (demoIndex > 0) demoIndex--;
+                    updateQuizViewDemo();
+                }
+            });
+        }
+        updateQuizViewDemo();
+    }
+
+    // 4. Render ProgressBar Component Demo
     const progressContainer = document.getElementById('preview-progress');
     renderProgressBar(progressContainer, { current: 1, total: 8 });
 
@@ -42,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 4. Render QuestionCard Component Demo
+    // 5. Render QuestionCard Component Demo
     const questionContainer = document.getElementById('preview-question');
     renderQuestionCard(questionContainer, {
         questionData: QUESTIONS[0],
@@ -51,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 5. Render LoadingSpinner Component Demo
+    // 6. Render LoadingSpinner Component Demo
     const spinnerContainer = document.getElementById('preview-spinner');
     renderLoadingSpinner(spinnerContainer, {
         title: "당신의 창업 성향 분석 중...",
@@ -62,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (fill) fill.style.width = "75%";
     }, 500);
 
-    // 6. Render ResultCard & SynergyCard Component Demo
+    // 7. Render ResultCard & SynergyCard Component Demo
     const resultContainer = document.getElementById('preview-result');
     const synergyContainer = document.getElementById('preview-synergy');
 
@@ -85,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 7. Trigger Toast Demo
+    // 8. Trigger Toast Demo
     const triggerToastBtn = document.getElementById('trigger-toast-btn');
     triggerToastBtn.addEventListener('click', () => {
         toast.show("✨ 컴포넌트 라이브 알림 토스트가 작동되었습니다!");
