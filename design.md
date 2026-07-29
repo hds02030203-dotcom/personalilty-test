@@ -32,6 +32,20 @@
             └── [ Content Hierarchy: Gradient Heading + Clean Body + Interactive Pill ]
   ```
 
+### 2.1 UI 목업 시각화 (Screen UI Preview)
+
+````carousel
+![1. 메인 랜딩 화면 UI](C:/Users/황동수/.gemini/antigravity/brain/9f8eea15-345f-4de7-9448-99bdd6c257a6/main_landing_screen_1785307745090.jpg)
+<!-- slide -->
+![2. 테스트 질문 진행 화면 UI](C:/Users/황동수/.gemini/antigravity/brain/9f8eea15-345f-4de7-9448-99bdd6c257a6/quiz_screen_mockup_1785307755214.jpg)
+<!-- slide -->
+![3. 최종 성향 결과 페이지 UI](C:/Users/황동수/.gemini/antigravity/brain/9f8eea15-345f-4de7-9448-99bdd6c257a6/result_page_mockup_1785307768370.jpg)
+````
+
+| 1. 메인 랜딩 화면 | 2. 테스트 진행 화면 | 3. 결과 페이지 화면 |
+| :--- | :--- | :--- |
+| ![메인 화면 UI](C:/Users/황동수/.gemini/antigravity/brain/9f8eea15-345f-4de7-9448-99bdd6c257a6/main_landing_screen_1785307745090.jpg) | ![질문 진행 UI](C:/Users/황동수/.gemini/antigravity/brain/9f8eea15-345f-4de7-9448-99bdd6c257a6/quiz_screen_mockup_1785307755214.jpg) | ![결과 페이지 UI](C:/Users/황동수/.gemini/antigravity/brain/9f8eea15-345f-4de7-9448-99bdd6c257a6/result_page_mockup_1785307768370.jpg) |
+
 ---
 
 ## 3. 컬러 시스템 (Color System & Tokens)
