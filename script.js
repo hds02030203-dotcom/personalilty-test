@@ -268,7 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const startBtn = document.getElementById('start-btn');
 
-    // --- KakaoTalk SDK helper (Reads from window.ENV_KAKAO_JS_KEY or process.env) ---
+    // --- KakaoTalk SDK helper ---
     function getKakaoKey() {
         return window.ENV_KAKAO_JS_KEY || '';
     }
@@ -279,12 +279,11 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 window.Kakao.init(key);
             } catch (e) {
-                console.error('[Kakao SDK] Init Exception:', e);
+                console.error('[Kakao SDK Init Exception]', e);
             }
         }
     }
 
-    // Initialize Kakao SDK on page load if script is present
     initKakaoSDK();
 
     // --- Toast Component ---
@@ -561,7 +560,25 @@ document.addEventListener('DOMContentLoaded', () => {
         initKakaoSDK();
         const key = getKakaoKey();
 
-        if (window.Kakao && window.Kakao.isInitialized()) {
+        if (!key) {
+            showToast("카카오톡 SDK 키가 설정되지 않았습니다. (.env 또는 Vercel 환경변수를 확인해주세요)");
+            return;
+        }
+
+        if (!window.Kakao) {
+            showToast("카카오 SDK 모듈을 불러오는 중입니다. 잠시 후 다시 시도해주세요.");
+            return;
+        }
+
+        if (!window.Kakao.isInitialized()) {
+            try {
+                window.Kakao.init(key);
+            } catch (err) {
+                console.error('[Kakao Init Error]', err);
+            }
+        }
+
+        if (window.Kakao.isInitialized()) {
             const res = currentResultData || ARCHETYPES.idea;
             try {
                 window.Kakao.Share.sendDefault({
@@ -594,10 +611,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             } catch (err) {
                 console.error('[Kakao Share Error]', err);
-                showToast("카카오톡 공유 도중 오류가 발생했습니다.");
+                showToast("카카오 개발자 콘솔에 현재 도메인(" + window.location.origin + ")을 등록했는지 확인해주세요.");
             }
         } else {
-            showToast("카카오톡 SDK 환경변수(KAKAO_JS_KEY)를 확인해주세요.");
+            showToast("카카오 SDK 초기화에 실패했습니다. 키 및 카카오 개발자 콘솔을 확인해주세요.");
         }
     }
 });
