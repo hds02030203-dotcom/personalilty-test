@@ -8,11 +8,9 @@ import { createHeader } from './components/Header.js';
 import { renderLandingCard } from './components/LandingCard.js';
 import { renderQuizView } from './components/QuizView.js';
 import { renderLoadingView } from './components/LoadingView.js';
+import { renderResultView } from './components/ResultView.js';
 import { renderProgressBar } from './components/ProgressBar.js';
 import { renderQuestionCard } from './components/QuestionCard.js';
-import { renderLoadingSpinner } from './components/LoadingSpinner.js';
-import { renderResultCard } from './components/ResultCard.js';
-import { renderSynergyCard } from './components/SynergyCard.js';
 import { createToast } from './components/ToastNotification.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -69,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
             renderLoadingView(loadingViewContainer, {
                 duration: 2400,
                 onComplete: () => {
-                    toast.show("✅ 분석 로딩 완료! 결과 화면으로 전환 준비 완료");
+                    toast.show("✅ 분석 로딩 완료! 결과 화면(ResultView)으로 전환됩니다.");
                 }
             });
         }
@@ -80,7 +78,29 @@ document.addEventListener('DOMContentLoaded', () => {
         replayLoadingBtn.addEventListener('click', runLoadingDemo);
     }
 
-    // 5. Render ProgressBar Component Demo
+    // 5. Render ResultView Component Demo (4. 최종 결과 화면)
+    const resultViewContainer = document.getElementById('preview-result-view');
+    function updateResultViewDemo(typeKey) {
+        if (resultViewContainer) {
+            const archetype = ARCHETYPES[typeKey];
+            renderResultView(resultViewContainer, {
+                resultData: archetype,
+                onShare: () => toast.show("✨ 공유하기 기능 실행! (클립보드 복사 완료)"),
+                onRestart: () => toast.show("✨ 다시 테스트하기 실행! (시작 화면으로 이동)")
+            });
+        }
+    }
+    updateResultViewDemo('idea');
+
+    document.querySelectorAll('#archetype-ctrls .demo-ctrl-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            document.querySelectorAll('#archetype-ctrls .demo-ctrl-btn').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            updateResultViewDemo(e.target.dataset.type);
+        });
+    });
+
+    // 6. Render ProgressBar Component Demo
     const progressContainer = document.getElementById('preview-progress');
     renderProgressBar(progressContainer, { current: 1, total: 8 });
 
@@ -91,36 +111,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 6. Render QuestionCard Component Demo
+    // 7. Render QuestionCard Component Demo
     const questionContainer = document.getElementById('preview-question');
     renderQuestionCard(questionContainer, {
         questionData: QUESTIONS[0],
         onSelectOption: (scores) => {
             toast.show(`선택한 항목의 성향 점수가 가산되었습니다! (${JSON.stringify(scores)})`);
         }
-    });
-
-    // 7. Render ResultCard & SynergyCard Component Demo
-    const resultContainer = document.getElementById('preview-result');
-    const synergyContainer = document.getElementById('preview-synergy');
-
-    function updateResultDemo(typeKey) {
-        const archetype = ARCHETYPES[typeKey];
-        renderResultCard(resultContainer, { resultData: archetype });
-        renderSynergyCard(synergyContainer, {
-            bestPartner: archetype.bestPartner,
-            challengingPartner: archetype.challengingPartner
-        });
-    }
-
-    updateResultDemo('idea');
-
-    document.querySelectorAll('#archetype-ctrls .demo-ctrl-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            document.querySelectorAll('#archetype-ctrls .demo-ctrl-btn').forEach(b => b.classList.remove('active'));
-            e.target.classList.add('active');
-            updateResultDemo(e.target.dataset.type);
-        });
     });
 
     // 8. Trigger Toast Demo

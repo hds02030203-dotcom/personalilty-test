@@ -9,8 +9,7 @@ import { createHeader } from './components/Header.js';
 import { renderLandingCard } from './components/LandingCard.js';
 import { renderQuizView } from './components/QuizView.js';
 import { renderLoadingView } from './components/LoadingView.js';
-import { renderResultCard } from './components/ResultCard.js';
-import { renderSynergyCard } from './components/SynergyCard.js';
+import { renderResultView } from './components/ResultView.js';
 import { createToast } from './components/ToastNotification.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -33,22 +32,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadingScreen = document.getElementById('loading-screen');
     const resultScreen = document.getElementById('result-screen');
 
-    // DOM Slots
-    const resultSlot = document.getElementById('result-slot');
-    const synergySlot = document.getElementById('synergy-slot');
-
     // 1. Mount LandingCard Component (1. 시작화면)
     renderLandingCard(landingScreen, {
         onStartTest: startQuiz,
         userCount: "1,480"
     });
-
-    const shareBtn = document.getElementById('share-btn');
-    const restartBtn = document.getElementById('restart-btn');
-
-    // --- Event Listeners ---
-    restartBtn.addEventListener('click', resetQuiz);
-    shareBtn.addEventListener('click', shareResult);
 
     // --- Core Navigation Logic ---
     function switchScreen(targetScreen) {
@@ -113,12 +101,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         renderLoadingView(loadingScreen, {
             duration: 2400,
-            onComplete: showFinalResult
+            onComplete: showFinalResultView
         });
     }
 
-    // 4. Render Final Result View (4. 결과 화면)
-    function showFinalResult() {
+    // 4. Render ResultView Component (4. 최종 결과 화면)
+    function showFinalResultView() {
         let highestType = "idea";
         let maxScore = -1;
 
@@ -131,13 +119,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const resultData = ARCHETYPES[highestType];
 
-        document.getElementById('result-main-title').textContent = resultData.title;
-        document.getElementById('result-sub-title').textContent = resultData.subtitle;
-
-        renderResultCard(resultSlot, { resultData });
-        renderSynergyCard(synergySlot, {
-            bestPartner: resultData.bestPartner,
-            challengingPartner: resultData.challengingPartner
+        renderResultView(resultScreen, {
+            resultData,
+            onShare: shareResult,
+            onRestart: resetQuiz
         });
 
         switchScreen(resultScreen);
