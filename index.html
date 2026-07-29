@@ -6,39 +6,33 @@
     <title>대학생 창업 성향 테스트 | Startup Personality Test</title>
     <meta name="description" content="나는 창업 팀에서 어떤 역할일까? 대학생 창업 캠프 필수! 3분 만에 알아보는 내 창업 성향 및 환상의 팀원 궁합 진단">
     
-    <!-- OpenGraph Tags -->
+    <!-- OpenGraph Meta Tags -->
     <meta property="og:title" content="대학생 창업 성향 테스트 | Startup Personality Test">
     <meta property="og:description" content="3분 만에 확인하는 내 창업 성향과 캠프 추천 역할, 환상의 팀원 궁합!">
     <meta property="og:type" content="website">
 
-    <!-- Fonts: Google Fonts Pretendard alternative (Outfit + Noto Sans KR) -->
+    <!-- Fonts: Google Fonts (Outfit + Noto Sans KR) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- FontAwesome for Icons -->
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Custom Stylesheet -->
-    <link rel="stylesheet" href="styles.css">
+    <!-- Modular CSS System (from design.md) -->
+    <link rel="stylesheet" href="styles/variables.css">
+    <link rel="stylesheet" href="styles/base.css">
+    <link rel="stylesheet" href="styles/components.css">
+    <link rel="stylesheet" href="styles/screens.css">
 </head>
 <body>
-    <!-- Canvas background decoration -->
+    <!-- Background Ambient Glow Decoration -->
     <div class="bg-glow bg-glow-1"></div>
     <div class="bg-glow bg-glow-2"></div>
     <div class="bg-glow bg-glow-3"></div>
 
     <div class="app-container">
-        <!-- Header -->
-        <header class="app-header">
-            <div class="logo">
-                <i class="fa-solid fa-rocket logo-icon"></i>
-                <span class="logo-text">STARTUP<span class="highlight">TYPE</span></span>
-            </div>
-            <div class="tag-badge">
-                <i class="fa-solid fa-graduation-cap"></i> 대학생 창업 캠프 공식 진단
-            </div>
-        </header>
+        <!-- Header is mounted dynamically by components/Header.js -->
 
         <!-- 1. Landing Screen -->
         <section id="landing-screen" class="screen active">
@@ -89,33 +83,13 @@
         <!-- 2. Quiz Screen -->
         <section id="quiz-screen" class="screen">
             <div class="quiz-container">
-                <!-- Progress bar -->
-                <div class="progress-section">
-                    <div class="progress-header">
-                        <span id="question-counter" class="step-indicator">Question 1 / 8</span>
-                        <span id="progress-percent" class="percent-indicator">12%</span>
-                    </div>
-                    <div class="progress-bar-bg">
-                        <div id="progress-bar-fill" class="progress-bar-fill" style="width: 12.5%;"></div>
-                    </div>
-                </div>
+                <!-- Mounted ProgressBar Component Slot -->
+                <div id="progress-slot"></div>
 
-                <!-- Question Card -->
-                <div class="question-card glass-panel">
-                    <div class="question-badge">
-                        <i class="fa-solid fa-lightbulb"></i> <span id="q-category">캠프 상황 #1</span>
-                    </div>
-                    <h2 id="question-text" class="question-text">
-                        질문 텍스트가 들어가는 공간입니다.
-                    </h2>
-                    
-                    <!-- Options List -->
-                    <div id="options-container" class="options-container">
-                        <!-- Rendered by script.js -->
-                    </div>
-                </div>
+                <!-- Mounted QuestionCard Component Slot -->
+                <div id="question-slot"></div>
 
-                <!-- Navigation buttons -->
+                <!-- Navigation Buttons -->
                 <div class="quiz-nav">
                     <button id="prev-btn" class="btn btn-secondary" disabled>
                         <i class="fa-solid fa-chevron-left"></i> 이전 질문
@@ -126,18 +100,8 @@
 
         <!-- 3. Loading Screen -->
         <section id="loading-screen" class="screen">
-            <div class="loading-content">
-                <div class="spinner-box">
-                    <div class="circle-outer"></div>
-                    <div class="circle-inner"></div>
-                    <i class="fa-solid fa-atom loading-icon"></i>
-                </div>
-                <h2 id="loading-text" class="loading-title">당신의 창업 성향 분석 중...</h2>
-                <p class="loading-subtext">창업 캠프에서의 행동 패턴과 선택한 답변을 종합 계산하고 있습니다.</p>
-                <div class="loading-progress">
-                    <div id="loading-bar-fill" class="loading-bar-fill"></div>
-                </div>
-            </div>
+            <!-- Mounted LoadingSpinner Component Slot -->
+            <div id="loading-slot"></div>
         </section>
 
         <!-- 4. Result Screen -->
@@ -145,69 +109,15 @@
             <div class="result-container">
                 <div class="result-header">
                     <div class="result-tag">MY STARTUP TYPE</div>
-                    <h1 id="result-title" class="result-main-title">유형 제목</h1>
-                    <p id="result-subtitle" class="result-sub-title">유형 수식어 및 한 줄 정의</p>
+                    <h1 id="result-main-title" class="result-main-title">유형 제목</h1>
+                    <p id="result-sub-title" class="result-sub-title">유형 수식어 및 한 줄 정의</p>
                 </div>
 
-                <!-- Main Result Card -->
-                <div class="result-card glass-panel">
-                    <div class="card-hero">
-                        <div id="result-avatar" class="avatar-box">
-                            <i class="fa-solid fa-rocket"></i>
-                        </div>
-                        <div class="role-badge">
-                            <i class="fa-solid fa-briefcase"></i> 추천 캠프 역할: <span id="result-role">CEO</span>
-                        </div>
-                    </div>
+                <!-- Mounted ResultCard Component Slot -->
+                <div id="result-slot"></div>
 
-                    <div class="card-section">
-                        <h3><i class="fa-solid fa-address-card"></i> 성향 종합 분석</h3>
-                        <p id="result-description" class="desc-text">
-                            상세 설명 영역
-                        </p>
-                    </div>
-
-                    <div class="card-grid">
-                        <div class="sub-card strengths-card">
-                            <h4><i class="fa-solid fa-thumbs-up"></i> 대표 강점 (Strengths)</h4>
-                            <ul id="result-strengths" class="badge-list">
-                                <!-- Rendered dynamically -->
-                            </ul>
-                        </div>
-                        <div class="sub-card growths-card">
-                            <h4><i class="fa-solid fa-seedling"></i> 보완하면 더 좋은 점</h4>
-                            <ul id="result-growths" class="badge-list">
-                                <!-- Rendered dynamically -->
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="card-section tips-section">
-                        <h3><i class="fa-solid fa-compass"></i> 창업 캠프 200% 활용 팁</h3>
-                        <p id="result-tip" class="tip-text"></p>
-                    </div>
-                </div>
-
-                <!-- Team Synergy Section -->
-                <div class="synergy-section">
-                    <h2 class="section-title"><i class="fa-solid fa-handshake"></i> 팀원 궁합 및 시너지 카드</h2>
-                    <div class="synergy-grid">
-                        <div class="synergy-card best-partner glass-panel">
-                            <div class="synergy-header">
-                                <span class="synergy-badge best"><i class="fa-solid fa-heart"></i> 환상의 짝꿍</span>
-                                <h3 id="best-partner-name">유형 이름</h3>
-                            </div>
-                            <p id="best-partner-desc" class="synergy-desc">설명</p>
-                        </div>
-                        <div class="synergy-card challenging-partner glass-panel">
-                            <div class="synergy-header">
-                                <span class="synergy-badge challenge"><i class="fa-solid fa-bolt"></i> 주의가 필요한 짝꿍</span>
-                                <h3 id="challenging-partner-name">유형 이름</h3>
-                            </div>
-                            <p id="challenging-partner-desc" class="synergy-desc">설명</p>
-                        </div>
-                    </div>
-                </div>
+                <!-- Mounted SynergyCard Component Slot -->
+                <div id="synergy-slot"></div>
 
                 <!-- Action Buttons -->
                 <div class="result-actions">
@@ -227,12 +137,7 @@
         </footer>
     </div>
 
-    <!-- Toast Notification for Share -->
-    <div id="toast" class="toast">
-        <i class="fa-solid fa-check-circle"></i> <span id="toast-msg">링크가 클립보드에 복사되었습니다!</span>
-    </div>
-
-    <!-- Script -->
-    <script src="script.js"></script>
+    <!-- Main JavaScript Entry Module -->
+    <script type="module" src="app.js"></script>
 </body>
 </html>
