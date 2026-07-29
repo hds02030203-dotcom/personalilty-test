@@ -1,0 +1,13 @@
+# Environment Variables (STRICTLY EXCLUDED FROM GITHUB)
+.env
+.env.local
+.env.*.local
+env-config.js
+
+# Node / Dependencies
+node_modules/
+npm-debug.log*
+
+# OS / Editor Artifacts
+.DS_Store
+Thumbs.db

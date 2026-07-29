@@ -1,11 +1,11 @@
 /**
  * ResultView Component (4. 최종 결과 화면 컴포넌트)
- * Based on prd.md (4. 최종 결과 화면) and design.md (Result Card & Synergy Section)
+ * Based on prd.md (4. 최종 결과 화면) and design.md (Result Card & KakaoTalk Share)
  */
 import { renderResultCard } from './ResultCard.js';
 import { renderSynergyCard } from './SynergyCard.js';
 
-export function renderResultView(container, { resultData, onShare, onRestart }) {
+export function renderResultView(container, { resultData, onShare, onKakaoShare, onRestart }) {
     container.innerHTML = `
         <div class="result-container">
             <div class="result-header">
@@ -22,8 +22,11 @@ export function renderResultView(container, { resultData, onShare, onRestart }) 
 
             <!-- Action Buttons -->
             <div class="result-actions">
+                <button id="result-kakao-share-btn" class="btn btn-kakao btn-large">
+                    <i class="fa-solid fa-comment"></i> 카카오톡으로 결과 공유하기
+                </button>
                 <button id="result-share-btn" class="btn btn-primary btn-large">
-                    <i class="fa-solid fa-share-nodes"></i> 내 결과 공유하기
+                    <i class="fa-solid fa-share-nodes"></i> URL 링크 복사하기
                 </button>
                 <button id="result-restart-btn" class="btn btn-secondary btn-large">
                     <i class="fa-solid fa-rotate-right"></i> 다시 테스트하기
@@ -44,6 +47,11 @@ export function renderResultView(container, { resultData, onShare, onRestart }) 
     });
 
     // Event Bindings
+    const kakaoShareBtn = container.querySelector('#result-kakao-share-btn');
+    if (kakaoShareBtn && onKakaoShare) {
+        kakaoShareBtn.addEventListener('click', onKakaoShare);
+    }
+
     const shareBtn = container.querySelector('#result-share-btn');
     if (shareBtn && onShare) {
         shareBtn.addEventListener('click', onShare);

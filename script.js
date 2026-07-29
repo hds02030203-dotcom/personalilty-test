@@ -1,12 +1,11 @@
 /**
  * Startup Personality Test (대학생 창업 성향 테스트)
- * Unified Production Engine (Zero CORS Issues - Works on file:// and http://)
+ * Unified Production Engine with KakaoTalk SDK & Vercel Env Support
  */
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- Data Definitions ---
 
-    // 1. Archetypes Data
     const ARCHETYPES = {
         idea: {
             id: "idea",
@@ -172,7 +171,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // 2. Questions Data
     const QUESTIONS = [
         {
             category: "캠프 상황 #1 · 아이디어 발상",
@@ -260,6 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentQuestionIndex = 0;
     let scores = { idea: 0, builder: 0, strategist: 0, collaborator: 0, analyst: 0, execution: 0 };
     let userAnswers = [];
+    let currentResultData = null;
 
     // --- DOM Elements ---
     const landingScreen = document.getElementById('landing-screen');
@@ -268,6 +267,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultScreen = document.getElementById('result-screen');
 
     const startBtn = document.getElementById('start-btn');
+
+    // --- KakaoTalk SDK helper (Reads from window.ENV_KAKAO_JS_KEY or process.env) ---
+    function getKakaoKey() {
+        return window.ENV_KAKAO_JS_KEY || '';
+    }
+
+    function initKakaoSDK() {
+        const key = getKakaoKey();
+        if (window.Kakao && key && !window.Kakao.isInitialized()) {
+            try {
+                window.Kakao.init(key);
+            } catch (e) {
+                console.error('[Kakao SDK] Init Exception:', e);
+            }
+        }
+    }
+
+    // Initialize Kakao SDK on page load if script is present
+    initKakaoSDK();
 
     // --- Toast Component ---
     function showToast(msg) {
@@ -295,7 +313,6 @@ document.addEventListener('DOMContentLoaded', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // 1. Landing Screen Event
     if (startBtn) {
         startBtn.addEventListener('click', startQuiz);
     }
@@ -349,16 +366,14 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
 
-        // Option Click Handlers
         quizScreen.querySelectorAll('.option-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
+            btn.addEventListener('click', () => {
                 const optIdx = parseInt(btn.dataset.optIndex, 10);
                 const selectedOpt = currentQ.options[optIdx];
                 handleSelectOption(selectedOpt.scores);
             });
         });
 
-        // Prev Button Handler
         const prevBtn = quizScreen.querySelector('#quiz-prev-btn');
         if (prevBtn) {
             prevBtn.addEventListener('click', goToPreviousQuestion);
@@ -424,7 +439,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 2200);
     }
 
-    // 4. Render ResultView Component
+    // 4. Render ResultView Component with KakaoTalk Share
     function renderResultView() {
         let highestType = "idea";
         let maxScore = -1;
@@ -436,7 +451,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        const res = ARCHETYPES[highestType];
+        currentResultData = ARCHETYPES[highestType];
+        const res = currentResultData;
 
         resultScreen.innerHTML = `
             <div class="result-container">
@@ -503,8 +519,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
 
                 <div class="result-actions">
+                    <button id="res-kakao-btn" class="btn btn-kakao btn-large">
+                        <i class="fa-solid fa-comment"></i> 카카오톡으로 결과 공유하기
+                    </button>
                     <button id="res-share-btn" class="btn btn-primary btn-large">
-                        <i class="fa-solid fa-share-nodes"></i> 내 결과 공유하기
+                        <i class="fa-solid fa-share-nodes"></i> URL 링크 복사하기
                     </button>
                     <button id="res-restart-btn" class="btn btn-secondary btn-large">
                         <i class="fa-solid fa-rotate-right"></i> 다시 테스트하기
@@ -515,7 +534,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         switchScreen(resultScreen);
 
-        // Result Event Listeners
+        // KakaoTalk Share Handler
+        resultScreen.querySelector('#res-kakao-btn').addEventListener('click', shareKakaoTalk);
+
+        // URL Link Share Handler
         resultScreen.querySelector('#res-share-btn').addEventListener('click', () => {
             if (navigator.clipboard) {
                 navigator.clipboard.writeText(window.location.href).then(() => {
@@ -528,8 +550,54 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        // Restart Handler
         resultScreen.querySelector('#res-restart-btn').addEventListener('click', () => {
             startQuiz();
         });
+    }
+
+    // KakaoTalk Share Implementation
+    function shareKakaoTalk() {
+        initKakaoSDK();
+        const key = getKakaoKey();
+
+        if (window.Kakao && window.Kakao.isInitialized()) {
+            const res = currentResultData || ARCHETYPES.idea;
+            try {
+                window.Kakao.Share.sendDefault({
+                    objectType: 'feed',
+                    content: {
+                        title: `[대학생 창업 성향 테스트] ${res.title}`,
+                        description: `나의 캠프 추천 역할: ${res.role}\n${res.description.substring(0, 75)}...`,
+                        imageUrl: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800',
+                        link: {
+                            mobileWebUrl: window.location.href,
+                            webUrl: window.location.href,
+                        },
+                    },
+                    buttons: [
+                        {
+                            title: '내 성향 결과 확인하기',
+                            link: {
+                                mobileWebUrl: window.location.href,
+                                webUrl: window.location.href,
+                            },
+                        },
+                        {
+                            title: '나도 테스트해보기',
+                            link: {
+                                mobileWebUrl: window.location.origin,
+                                webUrl: window.location.origin,
+                            },
+                        },
+                    ],
+                });
+            } catch (err) {
+                console.error('[Kakao Share Error]', err);
+                showToast("카카오톡 공유 도중 오류가 발생했습니다.");
+            }
+        } else {
+            showToast("카카오톡 SDK 환경변수(KAKAO_JS_KEY)를 확인해주세요.");
+        }
     }
 });

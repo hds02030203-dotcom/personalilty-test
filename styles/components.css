@@ -79,6 +79,19 @@
     filter: brightness(1.1);
 }
 
+.btn-kakao {
+    background: #fee500;
+    color: #191919;
+    box-shadow: 0 10px 25px rgba(254, 229, 0, 0.3);
+}
+
+.btn-kakao:hover {
+    background: #fada00;
+    color: #000;
+    transform: translateY(-2px);
+    box-shadow: 0 14px 30px rgba(254, 229, 0, 0.45);
+}
+
 .btn-secondary {
     background: rgba(255, 255, 255, 0.08);
     color: var(--text-main);
