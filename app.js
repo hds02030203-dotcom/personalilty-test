@@ -8,7 +8,7 @@ import { QUESTIONS } from './data/questions.js';
 import { createHeader } from './components/Header.js';
 import { renderLandingCard } from './components/LandingCard.js';
 import { renderQuizView } from './components/QuizView.js';
-import { renderLoadingSpinner } from './components/LoadingSpinner.js';
+import { renderLoadingView } from './components/LoadingView.js';
 import { renderResultCard } from './components/ResultCard.js';
 import { renderSynergyCard } from './components/SynergyCard.js';
 import { createToast } from './components/ToastNotification.js';
@@ -34,7 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultScreen = document.getElementById('result-screen');
 
     // DOM Slots
-    const loadingSlot = document.getElementById('loading-slot');
     const resultSlot = document.getElementById('result-slot');
     const synergySlot = document.getElementById('synergy-slot');
 
@@ -60,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // 2. Start Test Functionality
+    // 1. Start Test Functionality
     function startQuiz() {
         currentQuestionIndex = 0;
         userAnswers = [];
@@ -69,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderCurrentQuestionView();
     }
 
-    // Render QuizView Component (2. 테스트 진행 화면)
+    // 2. Render QuizView Component (2. 테스트 진행 화면)
     function renderCurrentQuestionView() {
         const currentQ = QUESTIONS[currentQuestionIndex];
 
@@ -92,6 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentQuestionIndex < QUESTIONS.length) {
             renderCurrentQuestionView();
         } else {
+            // All questions answered -> Trigger 3. LoadingView Component
             processResultAndLoading();
         }
     }
@@ -107,29 +107,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // 3. Render LoadingView Component (3. 분석 로딩 화면)
     function processResultAndLoading() {
         switchScreen(loadingScreen);
 
-        renderLoadingSpinner(loadingSlot, {
-            title: "당신의 창업 성향 분석 중...",
-            subtext: "창업 캠프에서의 행동 패턴과 선택한 답변을 종합 계산하고 있습니다."
+        renderLoadingView(loadingScreen, {
+            duration: 2400,
+            onComplete: showFinalResult
         });
-
-        const loadingBarFill = loadingSlot.querySelector('#loading-bar-fill');
-        const loadingTitle = loadingSlot.querySelector('#loading-title');
-
-        setTimeout(() => { if (loadingBarFill) loadingBarFill.style.width = "45%"; }, 100);
-
-        setTimeout(() => {
-            if (loadingTitle) loadingTitle.textContent = "팀원과의 시너지 및 찰떡 궁합을 계산하는 중...";
-            if (loadingBarFill) loadingBarFill.style.width = "85%";
-        }, 900);
-
-        setTimeout(() => {
-            showFinalResult();
-        }, 1800);
     }
 
+    // 4. Render Final Result View (4. 결과 화면)
     function showFinalResult() {
         let highestType = "idea";
         let maxScore = -1;

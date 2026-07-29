@@ -7,6 +7,7 @@ import { QUESTIONS } from './data/questions.js';
 import { createHeader } from './components/Header.js';
 import { renderLandingCard } from './components/LandingCard.js';
 import { renderQuizView } from './components/QuizView.js';
+import { renderLoadingView } from './components/LoadingView.js';
 import { renderProgressBar } from './components/ProgressBar.js';
 import { renderQuestionCard } from './components/QuestionCard.js';
 import { renderLoadingSpinner } from './components/LoadingSpinner.js';
@@ -43,8 +44,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 questionData: QUESTIONS[demoIndex],
                 onSelectOption: (scores) => {
                     toast.show(`선택 완료! 점수 반영: ${JSON.stringify(scores)}`);
-                    if (demoIndex < QUESTIONS.length - 1) demoIndex++;
-                    updateQuizViewDemo();
+                    if (demoIndex < QUESTIONS.length - 1) {
+                        demoIndex++;
+                        updateQuizViewDemo();
+                    } else {
+                        toast.show("🎉 8번 문항 완료! 분석 로딩 화면(LoadingView)으로 진입합니다.");
+                    }
                 },
                 onPrevQuestion: () => {
                     if (demoIndex > 0) demoIndex--;
@@ -55,7 +60,27 @@ document.addEventListener('DOMContentLoaded', () => {
         updateQuizViewDemo();
     }
 
-    // 4. Render ProgressBar Component Demo
+    // 4. Render LoadingView Component Demo (3. 분석 로딩 화면)
+    const loadingViewContainer = document.getElementById('preview-loading-view');
+    const replayLoadingBtn = document.getElementById('replay-loading-btn');
+
+    function runLoadingDemo() {
+        if (loadingViewContainer) {
+            renderLoadingView(loadingViewContainer, {
+                duration: 2400,
+                onComplete: () => {
+                    toast.show("✅ 분석 로딩 완료! 결과 화면으로 전환 준비 완료");
+                }
+            });
+        }
+    }
+    runLoadingDemo();
+
+    if (replayLoadingBtn) {
+        replayLoadingBtn.addEventListener('click', runLoadingDemo);
+    }
+
+    // 5. Render ProgressBar Component Demo
     const progressContainer = document.getElementById('preview-progress');
     renderProgressBar(progressContainer, { current: 1, total: 8 });
 
@@ -66,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 5. Render QuestionCard Component Demo
+    // 6. Render QuestionCard Component Demo
     const questionContainer = document.getElementById('preview-question');
     renderQuestionCard(questionContainer, {
         questionData: QUESTIONS[0],
@@ -74,17 +99,6 @@ document.addEventListener('DOMContentLoaded', () => {
             toast.show(`선택한 항목의 성향 점수가 가산되었습니다! (${JSON.stringify(scores)})`);
         }
     });
-
-    // 6. Render LoadingSpinner Component Demo
-    const spinnerContainer = document.getElementById('preview-spinner');
-    renderLoadingSpinner(spinnerContainer, {
-        title: "당신의 창업 성향 분석 중...",
-        subtext: "창업 캠프에서의 행동 패턴과 선택한 답변을 종합 계산하고 있습니다."
-    });
-    setTimeout(() => {
-        const fill = spinnerContainer.querySelector('#loading-bar-fill');
-        if (fill) fill.style.width = "75%";
-    }, 500);
 
     // 7. Render ResultCard & SynergyCard Component Demo
     const resultContainer = document.getElementById('preview-result');
