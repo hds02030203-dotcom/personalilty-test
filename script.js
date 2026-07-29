@@ -268,18 +268,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const startBtn = document.getElementById('start-btn');
 
-    // --- KakaoTalk SDK helper ---
+    // --- KakaoTalk SDK helper (with fallback) ---
     function getKakaoKey() {
-        return window.ENV_KAKAO_JS_KEY || '';
+        return window.ENV_KAKAO_JS_KEY || '34b296c93aa64e700a33aefae6cba3bf';
     }
 
     function initKakaoSDK() {
         const key = getKakaoKey();
-        if (window.Kakao && key && !window.Kakao.isInitialized()) {
-            try {
-                window.Kakao.init(key);
-            } catch (e) {
-                console.error('[Kakao SDK Init Exception]', e);
+        if (window.Kakao && key) {
+            if (!window.Kakao.isInitialized()) {
+                try {
+                    window.Kakao.init(key);
+                    console.log('[Kakao SDK] Successfully initialized.');
+                } catch (e) {
+                    console.error('[Kakao SDK Init Exception]', e);
+                }
             }
         }
     }
@@ -298,7 +301,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         document.getElementById('toast-msg').textContent = msg;
         toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 2500);
+        setTimeout(() => toast.classList.remove('show'), 2800);
     }
 
     // --- Navigation Logic ---
@@ -560,13 +563,8 @@ document.addEventListener('DOMContentLoaded', () => {
         initKakaoSDK();
         const key = getKakaoKey();
 
-        if (!key) {
-            showToast("카카오톡 SDK 키가 설정되지 않았습니다. (.env 또는 Vercel 환경변수를 확인해주세요)");
-            return;
-        }
-
         if (!window.Kakao) {
-            showToast("카카오 SDK 모듈을 불러오는 중입니다. 잠시 후 다시 시도해주세요.");
+            showToast("카카오 SDK 모듈을 불러오는 중입니다. 인터넷 연결을 확인해주세요.");
             return;
         }
 
@@ -611,10 +609,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             } catch (err) {
                 console.error('[Kakao Share Error]', err);
-                showToast("카카오 개발자 콘솔에 현재 도메인(" + window.location.origin + ")을 등록했는지 확인해주세요.");
+                showToast("카카오 공유 도중 오류가 발생했습니다: " + (err.message || err));
             }
         } else {
-            showToast("카카오 SDK 초기화에 실패했습니다. 키 및 카카오 개발자 콘솔을 확인해주세요.");
+            showToast("카카오 SDK 초기화에 실패했습니다. (키: " + key + ")");
         }
     }
 });
