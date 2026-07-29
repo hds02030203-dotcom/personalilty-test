@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Startup Component Design Showcase | 데모 쇼케이스</title>
+
+    <!-- Fonts: Google Fonts (Outfit + Noto Sans KR) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Design System CSS -->
+    <link rel="stylesheet" href="styles/variables.css">
+    <link rel="stylesheet" href="styles/base.css">
+    <link rel="stylesheet" href="styles/components.css">
+    <link rel="stylesheet" href="styles/screens.css">
+
+    <style>
+        /* Demo Page Layout Styles */
+        body {
+            display: block;
+            min-height: 100vh;
+            padding: 0;
+            background-color: var(--bg-dark);
+        }
+
+        .demo-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Nav */
+        .demo-sidebar {
+            width: 260px;
+            background: rgba(15, 23, 42, 0.95);
+            border-right: 1px solid var(--bg-card-border);
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 100;
+        }
+
+        .demo-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .demo-brand i {
+            color: #a855f7;
+        }
+
+        .demo-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .demo-menu-item a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .demo-menu-item a:hover,
+        .demo-menu-item a.active {
+            background: rgba(139, 92, 246, 0.15);
+            color: #c084fc;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+        }
+
+        /* Main Content Area */
+        .demo-content {
+            margin-left: 260px;
+            flex: 1;
+            padding: 40px;
+            max-width: 960px;
+        }
+
+        .demo-section {
+            margin-bottom: 50px;
+            padding-bottom: 40px;
+            border-bottom: 1px solid var(--bg-card-border);
+        }
+
+        .demo-section-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-main);
+        }
+
+        .demo-section-title i {
+            color: #38bdf8;
+        }
+
+        .demo-section-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+
+        .demo-preview-box {
+            background: rgba(17, 24, 39, 0.5);
+            border: 1px solid var(--bg-card-border);
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            margin-bottom: 16px;
+        }
+
+        .demo-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .demo-ctrl-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--bg-card-border);
+            color: #fff;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .demo-ctrl-btn:hover, .demo-ctrl-btn.active {
+            background: #8b5cf6;
+            border-color: #8b5cf6;
+        }
+
+        @media (max-width: 768px) {
+            .demo-sidebar { display: none; }
+            .demo-content { margin-left: 0; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Glow -->
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+
+    <div class="demo-layout">
+        <!-- Sidebar Menu -->
+        <nav class="demo-sidebar">
+            <div class="demo-brand">
+                <i class="fa-solid fa-layer-group"></i>
+                <span>UI COMPONENT STORYBOOK</span>
+            </div>
+            <ul class="demo-menu">
+                <li class="demo-menu-item"><a href="#sec-colors"><i class="fa-solid fa-palette"></i> 컬러 시스템</a></li>
+                <li class="demo-menu-item"><a href="#sec-header"><i class="fa-solid fa-window-maximize"></i> Header 컴포넌트</a></li>
+                <li class="demo-menu-item"><a href="#sec-progress"><i class="fa-solid fa-bars-progress"></i> ProgressBar 컴포넌트</a></li>
+                <li class="demo-menu-item"><a href="#sec-question"><i class="fa-solid fa-circle-question"></i> QuestionCard 컴포넌트</a></li>
+                <li class="demo-menu-item"><a href="#sec-spinner"><i class="fa-solid fa-atom"></i> LoadingSpinner 컴포넌트</a></li>
+                <li class="demo-menu-item"><a href="#sec-result"><i class="fa-solid fa-id-card"></i> ResultCard 컴포넌트</a></li>
+                <li class="demo-menu-item"><a href="#sec-synergy"><i class="fa-solid fa-handshake"></i> SynergyCard 컴포넌트</a></li>
+                <li class="demo-menu-item"><a href="#sec-toast"><i class="fa-solid fa-bell"></i> Toast 컴포넌트</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content Showcase -->
+        <main class="demo-content">
+            <!-- Header Banner -->
+            <div style="margin-bottom: 40px;">
+                <div class="badge-pill"><i class="fa-solid fa-vial"></i> 컴포넌트 라이브 쇼케이스</div>
+                <h1 style="font-size: 2.2rem; font-weight: 900; margin-bottom: 8px;">UI/UX 컴포넌트 데모 페이지</h1>
+                <p style="color: var(--text-muted);">@design.md 명세로 구현된 개별 모듈형 UI 컴포넌트를 미리보고 실시간 테스트할 수 있습니다.</p>
+            </div>
+
+            <!-- 1. Design System Colors -->
+            <section id="sec-colors" class="demo-section">
+                <h2 class="demo-section-title"><i class="fa-solid fa-palette"></i> 1. 디자인 시스템 토큰 & 컬러 팔레트</h2>
+                <p class="demo-section-desc">Design System에서 관리하는 주요 Background 및 Accent Palette입니다.</p>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px;">
+                    <div style="background: var(--bg-dark); border: 1px solid var(--bg-card-border); padding: 16px; border-radius: 12px;">
+                        <div style="height: 40px; background: var(--bg-dark); border-radius: 6px; border: 1px solid #334155; margin-bottom: 8px;"></div>
+                        <strong style="font-size: 0.85rem;">--bg-dark</strong>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">#0b0f19</div>
+                    </div>
+                    <div style="background: var(--bg-dark); border: 1px solid var(--bg-card-border); padding: 16px; border-radius: 12px;">
+                        <div style="height: 40px; background: var(--primary-gradient); border-radius: 6px; margin-bottom: 8px;"></div>
+                        <strong style="font-size: 0.85rem;">--primary-gradient</strong>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">#8b5cf6 -> #3b82f6</div>
+                    </div>
+                    <div style="background: var(--bg-dark); border: 1px solid var(--bg-card-border); padding: 16px; border-radius: 12px;">
+                        <div style="height: 40px; background: var(--secondary-gradient); border-radius: 6px; margin-bottom: 8px;"></div>
+                        <strong style="font-size: 0.85rem;">--secondary-gradient</strong>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">#06b6d4 -> #3b82f6</div>
+                    </div>
+                    <div style="background: var(--bg-dark); border: 1px solid var(--bg-card-border); padding: 16px; border-radius: 12px;">
+                        <div style="height: 40px; background: var(--accent-pink); border-radius: 6px; margin-bottom: 8px;"></div>
+                        <strong style="font-size: 0.85rem;">--accent-pink</strong>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">#ec4899 -> #8b5cf6</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. Header Component -->
+            <section id="sec-header" class="demo-section">
+                <h2 class="demo-section-title"><i class="fa-solid fa-window-maximize"></i> 2. Header 컴포넌트 (Header.js)</h2>
+                <p class="demo-section-desc">로고 및 상단 태그 배지를 포함하는 독립형 헤더 컴포넌트입니다.</p>
+                <div class="demo-preview-box" id="preview-header"></div>
+            </section>
+
+            <!-- 3. ProgressBar Component -->
+            <section id="sec-progress" class="demo-section">
+                <h2 class="demo-section-title"><i class="fa-solid fa-bars-progress"></i> 3. ProgressBar 컴포넌트 (ProgressBar.js)</h2>
+                <p class="demo-section-desc">테스트 질문 진행률을 실시간 업데이트하는 인터랙티브 프로그레스 바입니다.</p>
+                <div class="demo-controls">
+                    <button class="demo-ctrl-btn" data-step="1">Q1 (12%)</button>
+                    <button class="demo-ctrl-btn" data-step="3">Q3 (38%)</button>
+                    <button class="demo-ctrl-btn" data-step="5">Q5 (63%)</button>
+                    <button class="demo-ctrl-btn" data-step="8">Q8 (100%)</button>
+                </div>
+                <div class="demo-preview-box" id="preview-progress"></div>
+            </section>
+
+            <!-- 4. QuestionCard Component -->
+            <section id="sec-question" class="demo-section">
+                <h2 class="demo-section-title"><i class="fa-solid fa-circle-question"></i> 4. QuestionCard 컴포넌트 (QuestionCard.js)</h2>
+                <p class="demo-section-desc">상황 제시형 문항 카드와 A, B, C, D 4지선다 선택지 버튼입니다.</p>
+                <div class="demo-preview-box" id="preview-question"></div>
+            </section>
+
+            <!-- 5. LoadingSpinner Component -->
+            <section id="sec-spinner" class="demo-section">
+                <h2 class="demo-section-title"><i class="fa-solid fa-atom"></i> 5. LoadingSpinner 컴포넌트 (LoadingSpinner.js)</h2>
+                <p class="demo-section-desc">듀얼 오비탈 스피너 회전 및 로딩 바 애니메이션 컴포넌트입니다.</p>
+                <div class="demo-preview-box" id="preview-spinner"></div>
+            </section>
+
+            <!-- 6. ResultCard Component -->
+            <section id="sec-result" class="demo-section">
+                <h2 class="demo-section-title"><i class="fa-solid fa-id-card"></i> 6. ResultCard 컴포넌트 (ResultCard.js)</h2>
+                <p class="demo-section-desc">최종 성향 유형별 프로필, 강점/보완점 카드입니다. 아래 버튼으로 6가지 유형을 변경해보세요.</p>
+                <div class="demo-controls" id="archetype-ctrls">
+                    <button class="demo-ctrl-btn active" data-type="idea">아이디어형</button>
+                    <button class="demo-ctrl-btn" data-type="builder">제작형</button>
+                    <button class="demo-ctrl-btn" data-type="strategist">전략형</button>
+                    <button class="demo-ctrl-btn" data-type="collaborator">협업형</button>
+                    <button class="demo-ctrl-btn" data-type="analyst">분석형</button>
+                    <button class="demo-ctrl-btn" data-type="execution">실행형</button>
+                </div>
+                <div class="demo-preview-box" id="preview-result"></div>
+            </section>
+
+            <!-- 7. SynergyCard Component -->
+            <section id="sec-synergy" class="demo-section">
+                <h2 class="demo-section-title"><i class="fa-solid fa-handshake"></i> 7. SynergyCard 컴포넌트 (SynergyCard.js)</h2>
+                <p class="demo-section-desc">환상의 짝꿍 및 주의가 필요한 짝꿍 카드입니다.</p>
+                <div class="demo-preview-box" id="preview-synergy"></div>
+            </section>
+
+            <!-- 8. Toast Component -->
+            <section id="sec-toast" class="demo-section">
+                <h2 class="demo-section-title"><i class="fa-solid fa-bell"></i> 8. ToastNotification 컴포넌트 (ToastNotification.js)</h2>
+                <p class="demo-section-desc">공유 완료 및 시스템 알림을 전달하는 팝업 토스트입니다.</p>
+                <button id="trigger-toast-btn" class="btn btn-primary">
+                    <i class="fa-solid fa-paper-plane"></i> 토스트 알림 실행해보기
+                </button>
+            </section>
+        </main>
+    </div>
+
+    <!-- Demo Script -->
+    <script type="module" src="demo.js"></script>
+</body>
+</html>
