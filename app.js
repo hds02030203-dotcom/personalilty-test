@@ -6,6 +6,7 @@
 import { ARCHETYPES } from './data/archetypes.js';
 import { QUESTIONS } from './data/questions.js';
 import { createHeader } from './components/Header.js';
+import { renderLandingCard } from './components/LandingCard.js';
 import { renderProgressBar } from './components/ProgressBar.js';
 import { renderQuestionCard } from './components/QuestionCard.js';
 import { renderLoadingSpinner } from './components/LoadingSpinner.js';
@@ -40,13 +41,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultSlot = document.getElementById('result-slot');
     const synergySlot = document.getElementById('synergy-slot');
 
-    const startBtn = document.getElementById('start-btn');
+    // Mount LandingCard Component
+    renderLandingCard(landingScreen, {
+        onStartTest: startQuiz,
+        userCount: "1,480"
+    });
+
     const prevBtn = document.getElementById('prev-btn');
     const shareBtn = document.getElementById('share-btn');
     const restartBtn = document.getElementById('restart-btn');
 
     // --- Event Listeners ---
-    startBtn.addEventListener('click', startQuiz);
     prevBtn.addEventListener('click', goToPreviousQuestion);
     restartBtn.addEventListener('click', resetQuiz);
     shareBtn.addEventListener('click', shareResult);
@@ -136,7 +141,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function showFinalResult() {
-        // Calculate Winner Archetype
         let highestType = "idea";
         let maxScore = -1;
 
@@ -149,14 +153,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const resultData = ARCHETYPES[highestType];
 
-        // Populate Result DOM Headings
         document.getElementById('result-main-title').textContent = resultData.title;
         document.getElementById('result-sub-title').textContent = resultData.subtitle;
 
-        // Render ResultCard Component
         renderResultCard(resultSlot, { resultData });
-
-        // Render SynergyCard Component
         renderSynergyCard(synergySlot, {
             bestPartner: resultData.bestPartner,
             challengingPartner: resultData.challengingPartner
